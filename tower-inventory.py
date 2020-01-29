@@ -1,3 +1,4 @@
+#!/bin/scl enable rh-python36 -- python3
 #!/usr/bin/env python3
 
 import json
