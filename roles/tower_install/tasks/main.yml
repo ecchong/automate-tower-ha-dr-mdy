@@ -1,5 +1,6 @@
 ---
-
+- debug:
+    msg: "{{ tower_install_inventory }}"
 
 - name: determine if vault params in use
   set_fact:
@@ -7,8 +8,7 @@
     tower_vault_params: "--vault-password-file={{ tower_vault_file }}"
   when: tower_vault_file is defined
 
-- name: run tower installer for version {{ tower_version }}
-#  command: "./setup.sh -i {{ tower_install_inventory }} {{ tower_install_extra_vars }} -- {{ tower_vault_params }} "
+- name: run tower installer for version {{ tower_version }} on RHEL 7
   shell: "scl enable rh-python36 -- ./setup.sh -i {{ tower_install_inventory }} {{ tower_install_extra_vars }} -- {{ tower_vault_params }} "
   args:
     chdir: "{{ tower_installer_current }}"
@@ -17,7 +17,24 @@
     ANSIBLE_BECOME: True
   register: tower_install_status
   ignore_errors: yes
-  when: not (tower_install_skip | bool)
+  when:
+  - not (tower_install_skip | bool)
+  - ansible_os_family == "RedHat"
+  - ansible_distribution_major_version == "7"
+
+- name: run tower installer for version {{ tower_version }} on RHEL 8
+  command: "./setup.sh -i {{ tower_install_inventory }} {{ tower_install_extra_vars }} -- {{ tower_vault_params }} "
+  args:
+    chdir: "{{ tower_installer_current }}"
+  environment:
+    ANSIBLE_BECOME_METHOD: sudo
+    ANSIBLE_BECOME: True
+  register: tower_install_status
+  ignore_errors: yes
+  when:
+  - not (tower_install_skip | bool)
+  - ansible_os_family == "RedHat"
+  - ansible_distribution_major_version == "8"
 
 - name: fail with message
   fail:

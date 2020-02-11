@@ -98,7 +98,7 @@
       - ansible_distribution_major_version == "8"
 
     - name: ensure master db is configured on tower nodes
-      shell: scl enable rh-python36 -- python -c "import postgres; print postgres.DATABASES['default']['HOST']"
+      shell: scl enable rh-python36 -- python3 -c "import postgres; print (postgres.DATABASES['default']['HOST'])"
       args:
         chdir: /etc/tower/conf.d
       register: master_db
