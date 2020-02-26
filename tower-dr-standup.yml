@@ -37,7 +37,10 @@
       file:
         state: directory
         path: /etc/tower
-        mode: 0640
+#        mode: 0640
+        mode: 0755
+        owner: root
+        group: awx
 
     - name: deploy secret to tower
       copy:
